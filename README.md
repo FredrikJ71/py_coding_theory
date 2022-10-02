@@ -2,5 +2,5 @@
 A collection of python scripts and modules for coding theory.
 
 Content:
-- polynomials_pct.py: Polynomials with coefficients in F_p.
+- polynomials.py: Polynomials with coefficients in F_p.
 
