@@ -19,3 +19,15 @@ def next_poly(poly, p):
         new_poly = [0] + next_poly(new_poly[1:], p)
     return new_poly
 
+if __name__=='__main__':
+    # test next_poly
+    # start with 1 + 2x over F_3
+    pol = [1, 2]
+    print(pol)
+    for int in range(10):
+        pol = next_poly(pol, 3)
+        print(pol)
+
+
+
+
