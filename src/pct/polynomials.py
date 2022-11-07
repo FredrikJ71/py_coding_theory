@@ -52,6 +52,28 @@ def degree(poly):
     return -1
 
 
+def next_monic_poly(poly, p):
+    """return the next monic polynomial in lexocigraphic order."""
+    # take care of empty polynomial
+    if len(poly) == 0:
+        return []
+    # generate next polynomial
+    pol = next_poly(poly, p)
+    # if already monic return pol
+    deg = degree(poly)
+    if pol[deg] == 1:
+        return pol
+    #calculate new degree and initiate pol
+    deg += 1
+    # if new degree equalt to length of poly then next polynomial is 1
+    deg %= len(pol)
+    # set coefficient for deg to one and all other to 0
+    for pos in range(len(pol)):
+        pol[pos] = 0
+    pol[deg] = 1
+    return pol
+
+
 def evaluate(poly, x):
     """calculate the value of poly(x)"""
     x_pow = 1
@@ -99,3 +121,11 @@ if __name__ == '__main__':
     print(evaluate(pol, 3))
     pol = [1, 2, 1, 0, 0]
     print(evaluate(pol, 3))
+    # test next monic
+    print("testing next monic")
+    pol = [1, 0, 0]
+    print(pol)
+    for i in range(20):
+        pol = next_monic_poly(pol, 3)
+        print(pol)
+
