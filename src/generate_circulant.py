@@ -1,6 +1,7 @@
 """A script that generates all generating polynomials for
 m x m circulant matrices. The generation is over the field F_q"""
 import math
+import sys
 import pct.polynomials as poly
 
 
@@ -70,36 +71,69 @@ def generate_polynomials(m,q):
     pol = [1]
     while len(pol) != m:
         pol.append(0)
-    print(pol)
     polynomials = [pol] # the list of found polynomials
-    print(polynomials)
     # need multiplicative inverses when determine equivalent polynomials
     inverses = mult_inverse(q)
     # iterate until we have found nbr_polynomials
     while len(polynomials) != nbr_polynomials:
         # generate next monic polynomial
         pol = poly.next_monic_poly(pol, q)
-        print(pol)
         temp = pol.copy() # temp should later be shifted and we do not want to shift pol
         new_pol = True # keep track if pol is in list
         for i in range(m-1):
             # shift polynomial
             temp = poly.cyclic_shift(temp)
-            print(temp)
             # check if monic equivalent polynomial is already in polynomials
             if equivalent_monic(temp, q, inverses) in polynomials:
                 new_pol = False
         # if new polynomial add pol in list
         if new_pol:
             polynomials.append(pol.copy())
-        print(polynomials)
     return polynomials    
 
 
-if __name__ == '__main__':
+def read_parameters():
+    """If user dous not specified input data to the file ask for them."""
     m = int(input("Size of the matrix (m): "))
     q = int(input("Prime field (q): "))
-    print("Number of polynomials:", number_defining_pol(m,q))
+    file_name = input("Filename to store polynomials: ")
+    return m, q, file_name
+
+
+if __name__ == '__main__':
+    # read the input parameters
+    # If no input parameters ask for input
+    # If three parameters use them as m q file_name
+    # In other case write help text
+    params = sys.argv[1:] #remove name of the script
+    if len(params)==0:
+        m,q,file_name = read_parameters()
+    elif len(params)==3:
+        m = int(params[0])
+        q = int(params[1])
+        file_name = params[2]
+    else:
+        print("Add the parameters: m p filename () or no parameters!")
+        exit()
+    # print some text to indicate that we start
+    print("Generating all circular polynomials of length m", m, "over prime field", q)
+    print("The polynomials are stored in", file_name)
+    print("Number of polynomials to generate:", number_defining_pol(m,q))
+    # generate the polynomials
     pols = generate_polynomials(m,q)
-    print(pols)
-    print(len(pols))
+    # write data to file
+    with open(file_name, 'w', encoding='utf-8') as f:
+        # write header
+        f.write(f"m: {m}\n")
+        f.write(f"p: {q}\n")
+        f.write(str(len(pols)))
+        f.write('\n')
+        # write each polynomial
+        for pol in pols:
+            line = ""
+            # all coefficients except the last one
+            for i in range(len(pol)-1):
+                line += f"{pol[i]}, "
+            # last element
+            line += f"{pol[-1]}\n"
+            f.write(line)
